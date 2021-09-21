@@ -83,7 +83,7 @@ def spaceman(secret_word):
         #TODO: Ask the player to guess one letter per round and check that it is only one letter
         guess = input("Enter a letter: ")
         attempts += 1
-        print(f"attempts: {attempts}")
+        print(f"You have {7 - attempts} guesses left")
         if (attempts >= len(secret_word)):
             print("you lose!")
             break
