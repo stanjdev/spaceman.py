@@ -1,4 +1,5 @@
 import random
+import string
 
 def load_word():
     '''
@@ -8,10 +9,11 @@ def load_word():
            string: The secret word to be used in the spaceman guessing game
     '''
     f = open('words.txt', 'r')
+    # f = open('words2.txt', 'r') # words2.txt file
     words_list = f.readlines()
     f.close()
     
-    # words_list = words_list[0].split(' ') #comment this line out if you use a words.txt file with each word on a new line
+    words_list = words_list[0].split(' ') #comment this line out if you use a words.txt file with each word on a new line
     secret_word = random.choice(words_list)
     return secret_word
 
@@ -44,7 +46,7 @@ def get_guessed_word(secret_word, letters_guessed):
     '''
 
     #TODO: Loop through the letters in secret word and build a string that shows the letters that have been guessed correctly so far that are saved in letters_guessed and underscores for the letters that have not been guessed yet
-    display_word = "_" * (len(secret_word) - 1)
+    display_word = "_" * (len(secret_word))
     for i in range(len(secret_word)):
       if secret_word[i] in letters_guessed:
         display_word = display_word[0:i] + secret_word[i] + display_word[i:-1]
@@ -62,6 +64,28 @@ def is_guess_in_word(guess, secret_word):
     #TODO: check if the letter guess is in the secret word
     if guess in secret_word: return True
     else: return False
+    
+
+def draw_spaceman(guesses_remaining, word_length):
+    spaceman = [
+        "     O",
+        "     O\n     |",
+        "     O\n     |\n    /",
+        "     O\n     |\n    /|",
+        "     O\n     |\n    /|\ ",
+        "     O\n     |\n    /|\  \n    /",
+        "     O\n     |\n    /|\  \n    / \ ",
+    ]
+    # spaceman = [" O", 
+    #             " |",
+    #             "/|\ ",
+    #             "/ \ "]
+    # spaceman.append(char)
+    # for i in range(word_length - guesses_remaining):
+    #     print(spaceman[i])
+    idx = word_length - guesses_remaining - 1
+    if idx < len(spaceman):
+        print(spaceman[idx])
 
 
 def spaceman(secret_word):
@@ -71,26 +95,44 @@ def spaceman(secret_word):
       secret_word (string): the secret word to guess.
     '''
     letters_guessed = []
-    attempts = 0
+    
+    letters_left = string.ascii_lowercase
+    def get_letters_not_guessed(letters_left):
+        for letter in letters_guessed:
+            if letter in letters_left:
+                idx = letters_left.index(letter)
+                # letters_left = letters_left[:idx] + letters_left[idx + 1:] #same effect as using replace()
+                letters_left = letters_left.replace(letter, "")
+        return letters_left
+    
+    guesses_remaining = len(secret_word)
     word_guessed = False
 
     #TODO: show the player information about the game according to the project spec
+    print("-----------------------------------------------")
     print("Welcome to Spaceman! Guess the letters in the secret word to win!")
     print(f"The secret word contains: {len(secret_word)} letters")
     print("You have 7 incorrect guesses, please enter one letter per round")
-    print("----------------------------------")
+    print("-----------------------------------------------")
     while word_guessed == False:
         #TODO: Ask the player to guess one letter per round and check that it is only one letter
         guess = input("Enter a letter: ")
-        attempts += 1
-        print(f"You have {7 - attempts} guesses left")
-        if (attempts >= len(secret_word)):
+
+        if (guesses_remaining < 1):
             print("you lose!")
+            print(f"The secret word was: {secret_word}")
+            ask_play_again(word_guessed)
             break
 
         # if guess == secret_word: print("you winnnn!!")
-        elif len(guess) > 1 or type(guess) != str or guess == "": 
+        if  guess == "":
+            print("Must enter a letter.")
+            continue
+        elif len(guess) > 1 or type(guess) != str: 
             print("Must be a single letter.")
+            print(f"You have {guesses_remaining} guesses left")
+            guesses_remaining -= 1
+            draw_spaceman(guesses_remaining, len(secret_word))
             continue
         elif guess in letters_guessed: 
             print("Already guessed that letter. Guess another letter.")
@@ -103,16 +145,34 @@ def spaceman(secret_word):
             print("Got one!")
         else:
             print("Guessed wrong..")
+            guesses_remaining -= 1
+            draw_spaceman(guesses_remaining, len(secret_word))
 
+        print(f"You have {guesses_remaining} guesses left")
         #TODO: show the guessed word so far
         print(f"Guessed word so far: {get_guessed_word(secret_word, letters_guessed)}")
+        print(f"These letters haven't been guessed yet: {get_letters_not_guessed(letters_left)}")
 
         #TODO: check if the game has been won or lost
         word_guessed = is_word_guessed(secret_word, letters_guessed)
+        if word_guessed == True:
+            ask_play_again(word_guessed)
+
+
+def ask_play_again(word_guessed):
+    response = input("play again? y/n: ")
+    if response == "y":
+        start_game()
+    else: return
+
+def start_game():
+    secret_word = load_word()
+    spaceman(secret_word)
+
+start_game()
 
 
 #These function calls that will start the game
-secret_word = load_word()
 # print(secret_word)
 
 # answer = get_guessed_word(secret_word, ['c', 'o', 'm', 't', 'g', 'y', 'a', 'q', 'd', 'e', 'h', 'j', 'i'])
@@ -120,4 +180,13 @@ secret_word = load_word()
 
 # print(is_guess_in_word("a", secret_word))
 
-spaceman(secret_word)
+
+""" 
+Spaceman Pseudocode:
+
+DEFINE a function to load a word randomly from a .txt file for the user to guess
+
+
+
+
+ """
