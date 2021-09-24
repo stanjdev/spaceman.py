@@ -169,14 +169,7 @@ def start_game():
 
 start_game()
 
-# # TESTS:
-# # These function calls that will start the game
-# print(secret_word)
 
-# answer = get_guessed_word(secret_word, ['c', 'o', 'm', 't', 'g', 'y', 'a', 'q', 'd', 'e', 'h', 'j', 'i'])
-# print(secret_word, answer)
-
-# print(is_guess_in_word("a", secret_word))
 
 
 """ 
